@@ -12,7 +12,7 @@ void produce(int offset)
 {
     // 算上偏移量，保证不会出现重复
     for (int i = task_number * offset; i < task_number * (offset + 1); i++) { 
-        printf("produce %d\n", i);
+        //printf("produce %d\n", i);
         lfq->enqueue(i);
     }
 }
@@ -21,10 +21,12 @@ void consume()
 {
     for (int i = 0; i < task_number; i++) {
         int res = lfq->dequeue();
-        if (res > 0)
-            printf("consume %d\n", res);
-        else
-            printf("Fail to consume!\n");
+        if (res > 0) {
+            //printf("consume %d\n", res);
+        }
+        else {
+            //printf("Fail to consume!\n");
+        }
     }
 }
 
@@ -44,6 +46,8 @@ int main(int argc, char** argv)
         task_number   = atoi(argv[2]);
     }
 
+    auto start = std::chrono::system_clock::now();
+
     for (int i = 0; i < thread_number; i++) {
         thread_vector1.push_back(std::thread(produce, i));
         thread_vector2.push_back(std::thread(consume));
@@ -56,6 +60,9 @@ int main(int argc, char** argv)
     for (auto& thr2 : thread_vector2) {
         thr2.join();
     }
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << elapsed.count() << "ms" << "\n";
     ProfilerStop();
     return 0;
 }
