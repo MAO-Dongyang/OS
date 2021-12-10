@@ -3,6 +3,8 @@
 #include <thread>
 #include <vector>
 #include <gperftools/profiler.h>
+#include <chrono>
+#include <iostream>
 
 int         thread_number;
 int         task_number;
@@ -11,7 +13,7 @@ MutexQueue* lfq;
 void produce(int offset)
 {
     for (int i = task_number * offset; i < task_number * (offset + 1); i++) {
-        printf("produce %d\n", i);
+        //printf("produce %d\n", i);
         lfq->enqueue(i);
     }
 }
@@ -20,10 +22,12 @@ void consume()
 {
     for (int i = 0; i < task_number; i++) {
         int res = lfq->dequeue();
-        if (res > 0)
-            printf("consume %d\n", res);
-        else
-            printf("Fail to consume!\n");
+        if (res > 0) {
+            //printf("consume %d\n", res);
+        }
+        else {
+            //printf("Fail to consume!\n");
+        }
     }
 }
 
@@ -36,12 +40,14 @@ int main(int argc, char** argv)
 
     if (argc < 3) {
         thread_number = 10;
-        task_number = 10000;
+        task_number = 1000;
     }
     else {
         thread_number = atoi(argv[1]);
         task_number = atoi(argv[2]);
     }
+
+    auto start = std::chrono::system_clock::now();
 
     for (int i = 0; i < thread_number; i++) {
         thread_vector1.push_back(std::thread(produce, i));
@@ -55,6 +61,11 @@ int main(int argc, char** argv)
     for (auto& thr2 : thread_vector2) {
         thr2.join();
     }
+
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    std::cout << elapsed.count() << "ms" << "\n";
+
     ProfilerStop();
     return 0;
 }

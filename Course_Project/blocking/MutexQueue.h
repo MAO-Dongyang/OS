@@ -11,15 +11,17 @@ class MutexQueue {
     bool enqueue(int val);
     int  dequeue();
     ~MutexQueue();
+    QueueNode* search(int val);
+    int show();
 
   private:
     int        max_size = 100000;
     int        queue_size;
     QueueNode* tail;
     QueueNode* head;
+    std::mutex wrt;
     std::mutex mtx;
-    std::mutex producer_count_mtx;
-    std::mutex consumer_count_mtx;
+    int readcount;
 
     std::condition_variable not_full;
     std::condition_variable not_empty;
